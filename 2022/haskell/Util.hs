@@ -9,16 +9,6 @@ where
 import System.Environment
 import System.IO
 
--- -- splitBy :: (Foldable a a -> [a] -> [[a]]
--- splitBy _ [] = []
--- splitBy delimChar string = foldr f [] string
---   where
---     f :: a -> [[a]] -> [[a]]
---     f _ [] = []
---     f currentChar allStrings@(partialString : handledStrings)
---       | currentChar == delimChar = [] : allStrings
---       | otherwise = (currentChar : partialString) : handledStrings
-
 splitBy :: (Foldable t, Eq a) => a -> t a -> [[a]]
 splitBy delimiter = foldr f [[]]
   where
@@ -67,5 +57,5 @@ getMode (mode : _) = mode
 
 getFileContents :: String -> String -> IO String
 getFileContents puzzle mode
-  | mode == "test" = parseFile (puzzle ++ "/test.txt")
-  | otherwise = parseFile (puzzle ++ "/input.txt")
+  | mode == "test" = parseFile ("input/" ++ puzzle ++ "/test.txt")
+  | otherwise = parseFile ("input/" ++ puzzle ++ "/input.txt")
