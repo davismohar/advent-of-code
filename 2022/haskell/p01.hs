@@ -10,12 +10,10 @@ calSum :: CalorieList -> Int
 calSum calorieList = sum (calories calorieList)
 
 main :: IO ()
-main = do
-  result <- getSolutions "P01" part1 part2
-  putStrLn result
+main = getSolutions "P01" part1 part2 >>= \solution -> putStrLn solution
 
 part1 :: String -> String
-part1 input = show $ caloriesCarried $ maximum $ mapCaloriesListsToElves (parseCalorieLists (getLines input))
+part1 input = show $ caloriesCarried $ maximum $ mapCaloriesListsToElves $ parseCalorieLists $ getLines input
 
 parseCalorieLists :: [String] -> [CalorieList]
 parseCalorieLists input = map mapStringsToCalorieList (splitBy "" input)
