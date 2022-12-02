@@ -13,7 +13,7 @@ main :: IO ()
 main = getSolutions "P01" part1 part2 >>= \solution -> putStrLn solution
 
 part1 :: String -> String
-part1 input = show $ caloriesCarried $ maximum $ mapCaloriesListsToElves $ parseCalorieLists $ getLines input
+part1 input = show $ caloriesCarried $ maximum $ getElves input
 
 parseCalorieLists :: [String] -> [CalorieList]
 parseCalorieLists input = map mapStringsToCalorieList (splitBy "" input)
@@ -24,8 +24,11 @@ mapStringsToCalorieList input = CalorieList (map read input)
 mapCaloriesListsToElves :: [CalorieList] -> [Elf]
 mapCaloriesListsToElves = map (Elf . calSum)
 
+getElves :: String -> [Elf]
+getElves input = mapCaloriesListsToElves $ parseCalorieLists $ getLines input
+
 part2 :: String -> String
-part2 input = show $ sum $ toInts $ firstThree $ descendingSort $ mapCaloriesListsToElves $ parseCalorieLists $ getLines input
+part2 input = show $ sum $ toInts $ firstThree $ descendingSort $ getElves input
 
 descendingSort = sortBy (flip compare)
 
