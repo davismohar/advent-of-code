@@ -2,6 +2,7 @@ module Util
   ( splitBy,
     parseFile,
     getLines,
+    getNonEmptyLines,
     getSolutions,
   )
 where
