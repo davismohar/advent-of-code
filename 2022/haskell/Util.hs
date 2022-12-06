@@ -64,4 +64,4 @@ getFileContents puzzle mode
   | otherwise = parseFile ("input/" ++ puzzle ++ "/input.txt")
 
 traced :: (Show a) => a -> a
-traced a = trace ("traced: " ++ show a) a
+traced a = trace (show a) a
