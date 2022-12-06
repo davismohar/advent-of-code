@@ -4,9 +4,11 @@ module Util
     getLines,
     getNonEmptyLines,
     getSolutions,
+    traced,
   )
 where
 
+import Debug.Trace
 import System.Environment
 import System.IO
 
@@ -60,3 +62,6 @@ getFileContents :: String -> String -> IO String
 getFileContents puzzle mode
   | mode == "test" = parseFile ("input/" ++ puzzle ++ "/test.txt")
   | otherwise = parseFile ("input/" ++ puzzle ++ "/input.txt")
+
+traced :: (Show a) => a -> a
+traced a = trace ("traced: " ++ show a) a
