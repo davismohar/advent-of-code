@@ -9,7 +9,7 @@ part1 :: String -> String
 part1 input = show $ size $ visitedCoords $ applyDirections initialGrid $ parseDirections $ getLines input
 
 part2 :: String -> String
-part2 input = "part2"
+part2 input = show $ size $ (!! 9) $ visited $ applyDirections1 (initialGrid1 10) $ parseDirections $ getLines input
 
 type Coordinate = (Int, Int)
 
@@ -17,7 +17,11 @@ data GridState = GridState {headPos :: Coordinate, tailPos :: Coordinate, visite
 
 data GridState1 = GridState1 {rope :: [Coordinate], visited :: [Set Coordinate]} deriving (Eq, Show)
 
+data Move = Move {previousPos :: Coordinate, newPos :: Coordinate}
+
 initialGrid = GridState (0, 0) (0, 0) (singleton (0, 0))
+
+initialGrid1 size = GridState1 (replicate size (0, 0)) (replicate size (singleton (0, 0)))
 
 data Direction = L | R | U | D | UNKNOWN deriving (Enum, Show, Eq)
 
@@ -45,6 +49,44 @@ applyDirection dir gState = GridState (newHeadPos (dir) gState) (newTailPos dir 
 applyDirections :: GridState -> [Direction] -> GridState
 applyDirections = foldl (flip applyDirection)
 
+applyDirections1 :: GridState1 -> [Direction] -> GridState1
+applyDirections1 = foldl applyDirection1
+
+applyDirection1 :: GridState1 -> Direction -> GridState1
+applyDirection1 gState dir = GridState1 (moveRope (rope gState) (dir)) (getNewVisitedPositions (moveRope (rope gState) (dir)) (visited gState))
+
+moveRope :: [Coordinate] -> Direction -> [Coordinate]
+moveRope coords dir = map newPos (getRopeMovements coords dir)
+
+getNewVisitedPositions :: [Coordinate] -> [Set Coordinate] -> [Set Coordinate]
+getNewVisitedPositions = zipWith insert
+
+getRopeMovements :: [Coordinate] -> Direction -> [Move]
+getRopeMovements coords dir = foldl (\acc coord -> acc ++ [newTailPos1 (last acc) coord]) [newHeadPos1 dir (head coords)] (tail coords)
+
+newTailPos1 :: Move -> Coordinate -> Move
+newTailPos1 headMove follow
+  | isAdjacent (newPos headMove) follow = Move follow follow
+  | isOnAxis (newPos headMove) follow = moveOnAxisToBeAdjacent (newPos headMove) follow
+  | otherwise = moveDiagonallyToBeAdjacent (newPos headMove) follow
+
+isOnAxis :: Coordinate -> Coordinate -> Bool
+isOnAxis headCoord tailCoord = fst headCoord == fst tailCoord || snd headCoord == snd tailCoord
+
+moveOnAxisToBeAdjacent :: Coordinate -> Coordinate -> Move
+moveOnAxisToBeAdjacent headCoord tailCoord
+  | fst headCoord > fst tailCoord = Move tailCoord (fst tailCoord + 1, snd tailCoord)
+  | fst headCoord < fst tailCoord = Move tailCoord (fst tailCoord - 1, snd tailCoord)
+  | snd headCoord > snd tailCoord = Move tailCoord (fst tailCoord, snd tailCoord + 1)
+  | otherwise = Move tailCoord (fst tailCoord, snd tailCoord - 1)
+
+moveDiagonallyToBeAdjacent :: Coordinate -> Coordinate -> Move
+moveDiagonallyToBeAdjacent headCoord curCoord
+  | fst headCoord > fst curCoord && snd headCoord > snd curCoord = Move curCoord (fst curCoord + 1, snd curCoord + 1)
+  | fst headCoord > fst curCoord && snd headCoord < snd curCoord = Move curCoord (fst curCoord + 1, snd curCoord - 1)
+  | fst headCoord < fst curCoord && snd headCoord > snd curCoord = Move curCoord (fst curCoord - 1, snd curCoord + 1)
+  | otherwise = Move curCoord (fst curCoord - 1, snd curCoord - 1)
+
 newTailPos :: Direction -> GridState -> Coordinate
 newTailPos dir gState
   | isAdjacent (newHeadPos dir gState) (tailPos gState) = tailPos gState
@@ -69,6 +111,13 @@ newHeadPos dir (GridState head _ _)
   | dir == R = rightOne head
   | dir == U = upOne head
   | dir == D = downOne head
+
+newHeadPos1 :: Direction -> Coordinate -> Move
+newHeadPos1 dir coord
+  | dir == L = Move coord (leftOne coord)
+  | dir == R = Move coord (rightOne coord)
+  | dir == U = Move coord (upOne coord)
+  | dir == D = Move coord (downOne coord)
 
 leftOne :: Coordinate -> Coordinate
 leftOne (x, y) = (x -1, y)
