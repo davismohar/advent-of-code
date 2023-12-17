@@ -24,6 +24,13 @@
   [value start end]
   )
 
+(defrecord Coords
+  [x y])
+
+(defrecord SymbolCoords
+  [symbol coords]
+  )
+
 (defn take-next-number
   [indexed-line]
   (cond
@@ -89,35 +96,29 @@
     :else true
     ))
 
-(defn get-symbol-indexes
+(defn get-indexed-symbols
   [indexed-chars]
-  (map
-    :index
-    (filter
-      #(is-symbol (:char %))
-      indexed-chars
-      )
+  (filter
+    #(is-symbol (:char %))
+    indexed-chars
     )
+
   )
 
-(defrecord SymbolCoords
-  [x y]
-  )
 
 (defn get-symbol-coords
-  [indexed-char-lists]
+  [indexed-symbol-lists]
   (flatten (filter
              #(not (empty? %))
              (map-indexed
-               (fn [idx itm]
+               (fn [idx indexed-symbol-list]
                  (map
-                   #(SymbolCoords. % idx)
-                   itm
+                   (fn [indexed-symbol] (SymbolCoords. (:char indexed-symbol) (Coords. (:index indexed-symbol) idx)))
+                   indexed-symbol-list
                    )
                  )
-               indexed-char-lists
-               )))
-  )
+               indexed-symbol-lists
+               ))))
 
 (defn y-range
   [part-number-coord]
@@ -138,7 +139,7 @@
       (flatten (map
                  (fn [x] (
                            map
-                           (fn [y] (SymbolCoords. x y))
+                           (fn [y] (Coords. x y))
                            y-range
                            ))
                  x-range))
@@ -179,14 +180,14 @@
   [filename]
   (let [indexed-lines (map parse-indexed-characters (util/readlines filename))]
     (let [part-number-coords (index-part-numbers (map parse-part-numbers-in-line indexed-lines))]
-      (let [symbol-coords (get-symbol-coords (map get-symbol-indexes indexed-lines))]
+      (let [symbol-coords (get-symbol-coords (map get-indexed-symbols indexed-lines))]
         (reduce
           +
           (
             map
             #(:value (:part-number %))
             (filter
-              #(touching-symbol? % symbol-coords)
+              #(touching-symbol? % (map :coords symbol-coords))
               part-number-coords
               )
             )
@@ -196,9 +197,64 @@
     )
   )
 
+(defn get-surrounding-coords-of-symbol-coord
+  [symbol-coord]
+  ;hack this into a partnumbercoord to use the same function
+  (get-surrounding-coords (PartNumberCoord. (:y (:coords symbol-coord)) (PartNumber. 0 (:x (:coords symbol-coord)) (:x (:coords symbol-coord)))))
+  )
+
+(defn get-touching-numbers
+  [symbol-coord part-number-coords]
+  (filter
+    (fn [part-number-coord]
+      (
+        touching-symbol?
+        part-number-coord
+        (list (:coords symbol-coord))
+        )
+      )
+    part-number-coords
+    )
+  )
+
+(defn get-lists-of-size-2
+  [lists]
+  (filter
+    #(= (count %) 2)
+    lists
+    )
+  )
+
+(defn product-of-list-of-part-number-coords
+  [part-number-coords]
+  (
+    reduce
+    *
+    (map
+      #(:value (:part-number %))
+      part-number-coords
+      )
+    )
+  )
+
 (defn p02
   [filename]
-  nil
+  (let [indexed-lines (map parse-indexed-characters (util/readlines filename))]
+    (let [part-number-coords (index-part-numbers (map parse-part-numbers-in-line indexed-lines))]
+      (let [symbol-coords (get-symbol-coords (map get-indexed-symbols indexed-lines))]
+        (let [gear-symbols (filter #(= \* (:symbol %)) symbol-coords)]
+          (let [touching-number-lists (map #(get-touching-numbers % part-number-coords) gear-symbols)]
+            (reduce
+              +
+              (
+                map
+                product-of-list-of-part-number-coords
+                (get-lists-of-size-2 touching-number-lists))
+              )
+            ))
+        )
+      )
+    )
   )
 
 (util/print-output "d03" p01 p02)
