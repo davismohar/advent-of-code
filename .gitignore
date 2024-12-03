@@ -1,3 +1,7 @@
 .vscode
 .nrepl-port
 .cpcache
+
+.fake
+bin/
+obj/
