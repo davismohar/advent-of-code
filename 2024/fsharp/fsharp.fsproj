@@ -4,7 +4,8 @@
     <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="util.fs" />
+    <Compile Include="util/util.fs" />
+    <Compile Include="p03.fs" />
     <Compile Include="p02.fs" />
     <Compile Include="p01.fs" />
     <Compile Include="Main.fs" />

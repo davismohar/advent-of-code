@@ -1,6 +1,7 @@
 .vscode
 .nrepl-port
 .cpcache
+.config
 
 .fake
 bin/

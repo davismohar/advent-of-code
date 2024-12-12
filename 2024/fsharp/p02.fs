@@ -19,7 +19,6 @@ let isSafe x =
     let levels = levelsBetweenOneAndThree None x
     (inc || dec) && levels
 
-[<TailCall>]
 let rec remove i l =
     match i, l with
     | 0, x::xs -> xs
