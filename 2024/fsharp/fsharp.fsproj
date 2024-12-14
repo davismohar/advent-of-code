@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="util/util.fs" />
+    <Compile Include="p05.fs" />
     <Compile Include="p04.fs" />
     <Compile Include="p03.fs" />
     <Compile Include="p02.fs" />
