@@ -3,6 +3,7 @@ use clap::Parser;
 use utils::util;
 mod d01;
 mod d02;
+mod d03;
 
 fn main() {
     let problems = [
@@ -15,6 +16,11 @@ fn main() {
             number: String::from("d02"),
             p1: d02::p1,
             p2: d02::p2,
+        },
+        util::Problem {
+            number: String::from("d03"),
+            p1: d03::p1,
+            p2: d03::p2,
         },
     ];
     let args = Args::parse();
