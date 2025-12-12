@@ -4,6 +4,8 @@ use utils::util;
 mod d01;
 mod d02;
 mod d03;
+mod d04;
+mod d05;
 
 fn main() {
     let problems = [
@@ -21,6 +23,16 @@ fn main() {
             number: String::from("d03"),
             p1: d03::p1,
             p2: d03::p2,
+        },
+        util::Problem {
+            number: String::from("d04"),
+            p1: d04::p1,
+            p2: d04::p2,
+        },
+        util::Problem {
+            number: String::from("d05"),
+            p1: d05::p1,
+            p2: d05::p2,
         },
     ];
     let args = Args::parse();
