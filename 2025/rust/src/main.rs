@@ -6,6 +6,7 @@ mod d02;
 mod d03;
 mod d04;
 mod d05;
+mod d06;
 
 fn main() {
     let problems = [
@@ -33,6 +34,11 @@ fn main() {
             number: String::from("d05"),
             p1: d05::p1,
             p2: d05::p2,
+        },
+        util::Problem {
+            number: String::from("d06"),
+            p1: d06::p1,
+            p2: d06::p2,
         },
     ];
     let args = Args::parse();
